@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../services/api_service.dart';
 import '../services/firestore_service.dart';
+import 'package:provider/provider.dart';
+import '../providers/theme_provider.dart';
 import '../widgets/guidance_section.dart';
 import '../widgets/symptom_search_bar.dart';
 import '../widgets/selected_symptoms_list.dart';
@@ -12,14 +14,7 @@ import 'result_screen.dart';
 import 'history_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  final VoidCallback onToggleTheme;
-  final ThemeMode themeMode;
-
-  const HomeScreen({
-    super.key,
-    required this.onToggleTheme,
-    required this.themeMode,
-  });
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -184,20 +179,20 @@ class _HomeScreenState extends State<HomeScreen> {
     // Ensure display symptoms are up to date
     _updateDisplaySymptoms();
 
+    final isDarkMode = context.watch<ThemeProvider>().isDarkMode;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Disease Prediction'),
         actions: [
           IconButton(
             icon: Icon(
-              widget.themeMode == ThemeMode.light
-                  ? Icons.dark_mode
-                  : Icons.light_mode,
+              isDarkMode ? Icons.light_mode : Icons.dark_mode,
             ),
-            tooltip: widget.themeMode == ThemeMode.light
-                ? 'Switch to Dark Mode'
-                : 'Switch to Light Mode',
-            onPressed: widget.onToggleTheme,
+            tooltip: isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode',
+            onPressed: () {
+              context.read<ThemeProvider>().toggleTheme();
+            },
           ),
           IconButton(
             icon: const Icon(Icons.history),
