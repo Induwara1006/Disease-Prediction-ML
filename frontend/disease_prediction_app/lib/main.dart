@@ -5,26 +5,39 @@ import 'package:firebase_core/firebase_core.dart';
 import 'services/api_service.dart';
 import 'screens/result_screen.dart';
 import 'screens/history_screen.dart';
-import 'services/auth_service.dart';
 import 'services/firestore_service.dart';
 import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  ThemeMode _themeMode = ThemeMode.light;
+
+  void _toggleTheme() {
+    setState(() {
+      _themeMode = _themeMode == ThemeMode.light
+          ? ThemeMode.dark
+          : ThemeMode.light;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Disease Prediction',
+      themeMode: _themeMode,
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
@@ -50,8 +63,33 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
+      darkTheme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF0891B2),
+          brightness: Brightness.dark,
+        ),
+        cardTheme: CardThemeData(
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            textStyle: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ),
       // Temporarily bypass login - go directly to symptom screen
-      home: const SymptomScreen(),
+      home: SymptomScreen(onToggleTheme: _toggleTheme, themeMode: _themeMode),
       // TODO: Re-enable authentication after fixing Google Sign-In
       // home: StreamBuilder<User?>(
       //   stream: AuthService().authStateChanges,
@@ -72,7 +110,14 @@ class MyApp extends StatelessWidget {
 }
 
 class SymptomScreen extends StatefulWidget {
-  const SymptomScreen({super.key});
+  final VoidCallback onToggleTheme;
+  final ThemeMode themeMode;
+
+  const SymptomScreen({
+    super.key,
+    required this.onToggleTheme,
+    required this.themeMode,
+  });
 
   @override
   State<SymptomScreen> createState() => _SymptomScreenState();
@@ -93,8 +138,7 @@ class _SymptomScreenState extends State<SymptomScreen> {
   }
 
   Future<void> loadSymptoms() async {
-    final String response =
-        await rootBundle.loadString('assets/symptoms.json');
+    final String response = await rootBundle.loadString('assets/symptoms.json');
     final List<dynamic> data = json.decode(response);
 
     // Define common symptoms
@@ -113,7 +157,7 @@ class _SymptomScreenState extends State<SymptomScreen> {
       'breathlessness',
       'muscle_pain',
       'loss_of_appetite',
-      'abdominal_pain'
+      'abdominal_pain',
     ];
 
     setState(() {
@@ -125,7 +169,8 @@ class _SymptomScreenState extends State<SymptomScreen> {
   String getGuidanceText() {
     final count = selectedSymptoms.length;
     if (count == 0) return 'Tap symptoms below or use search to begin';
-    if (count < 4) return '$count symptom${count > 1 ? "s" : ""} selected • Add ${4 - count} more for better accuracy';
+    if (count < 4)
+      return '$count symptom${count > 1 ? "s" : ""} selected • Add ${4 - count} more for better accuracy';
     return '✓ $count symptoms selected • Great! Ready to predict';
   }
 
@@ -148,7 +193,8 @@ class _SymptomScreenState extends State<SymptomScreen> {
     final predictedDisease =
         (raw['predicted_disease'] ?? raw['disease'] ?? 'Unknown').toString();
 
-    final confidencePercent = double.tryParse(
+    final confidencePercent =
+        double.tryParse(
           (raw['confidence_percent'] ?? raw['confidence'] ?? 0).toString(),
         ) ??
         0.0;
@@ -193,20 +239,15 @@ class _SymptomScreenState extends State<SymptomScreen> {
     final dynamic top3 = raw['top_3'] ?? raw['top3'] ?? raw['top_3_diseases'];
 
     if (top3 is List && top3.isNotEmpty) {
-      return top3
-          .map<Map<String, dynamic>>((item) {
-            if (item is Map) {
-              return {
-                'disease': item['disease']?.toString() ?? '',
-                'confidence': _toDouble(item['confidence']),
-              };
-            }
-            return {
-              'disease': item.toString(),
-              'confidence': 0.0,
-            };
-          })
-          .toList();
+      return top3.map<Map<String, dynamic>>((item) {
+        if (item is Map) {
+          return {
+            'disease': item['disease']?.toString() ?? '',
+            'confidence': _toDouble(item['confidence']),
+          };
+        }
+        return {'disease': item.toString(), 'confidence': 0.0};
+      }).toList();
     }
 
     // Fallback: build map entries from names when only strings are provided
@@ -223,6 +264,17 @@ class _SymptomScreenState extends State<SymptomScreen> {
       appBar: AppBar(
         title: const Text('Disease Prediction'),
         actions: [
+          IconButton(
+            icon: Icon(
+              widget.themeMode == ThemeMode.light
+                  ? Icons.dark_mode
+                  : Icons.light_mode,
+            ),
+            tooltip: widget.themeMode == ThemeMode.light
+                ? 'Switch to Dark Mode'
+                : 'Switch to Light Mode',
+            onPressed: widget.onToggleTheme,
+          ),
           IconButton(
             icon: const Icon(Icons.history),
             tooltip: 'History',
@@ -344,9 +396,9 @@ class _SymptomScreenState extends State<SymptomScreen> {
                             return const Iterable<String>.empty();
                           }
                           return allSymptoms.where((symptom) {
-                            return symptom
-                                    .toLowerCase()
-                                    .contains(textEditingValue.text.toLowerCase()) &&
+                            return symptom.toLowerCase().contains(
+                                  textEditingValue.text.toLowerCase(),
+                                ) &&
                                 !selectedSymptoms.contains(symptom);
                           });
                         },
@@ -357,42 +409,54 @@ class _SymptomScreenState extends State<SymptomScreen> {
                             selectedSymptoms.add(selection);
                           });
                         },
-                        fieldViewBuilder: (context, textEditingController,
-                            focusNode, onFieldSubmitted) {
-                          return TextField(
-                            controller: textEditingController,
-                            focusNode: focusNode,
-                            decoration: InputDecoration(
-                              labelText: "Search for symptoms",
-                              hintText: "Type: fever, cough, headache...",
-                              prefixIcon: Icon(
-                                Icons.search_rounded,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                              suffixIcon: textEditingController.text.isNotEmpty
-                                  ? IconButton(
-                                      icon: const Icon(Icons.clear),
-                                      onPressed: () {
-                                        textEditingController.clear();
-                                      },
-                                    )
-                                  : null,
-                              filled: true,
-                              fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
-                                borderSide: BorderSide.none,
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
-                                borderSide: BorderSide(
-                                  color: Theme.of(context).colorScheme.primary,
-                                  width: 2,
+                        fieldViewBuilder:
+                            (
+                              context,
+                              textEditingController,
+                              focusNode,
+                              onFieldSubmitted,
+                            ) {
+                              return TextField(
+                                controller: textEditingController,
+                                focusNode: focusNode,
+                                decoration: InputDecoration(
+                                  labelText: "Search for symptoms",
+                                  hintText: "Type: fever, cough, headache...",
+                                  prefixIcon: Icon(
+                                    Icons.search_rounded,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
+                                  ),
+                                  suffixIcon:
+                                      textEditingController.text.isNotEmpty
+                                      ? IconButton(
+                                          icon: const Icon(Icons.clear),
+                                          onPressed: () {
+                                            textEditingController.clear();
+                                          },
+                                        )
+                                      : null,
+                                  filled: true,
+                                  fillColor: Theme.of(
+                                    context,
+                                  ).colorScheme.surfaceContainerHighest,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                    borderSide: BorderSide(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.primary,
+                                      width: 2,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
-                          );
-                        },
+                              );
+                            },
                       ),
                     ],
                   ),
@@ -410,13 +474,17 @@ class _SymptomScreenState extends State<SymptomScreen> {
                       gradient: LinearGradient(
                         colors: [
                           Theme.of(context).colorScheme.primaryContainer,
-                          Theme.of(context).colorScheme.primaryContainer.withOpacity(0.7),
+                          Theme.of(
+                            context,
+                          ).colorScheme.primaryContainer.withOpacity(0.7),
                         ],
                       ),
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
-                          color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.primary.withOpacity(0.1),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
@@ -438,12 +506,12 @@ class _SymptomScreenState extends State<SymptomScreen> {
                                 const SizedBox(width: 8),
                                 Text(
                                   'Your Symptoms',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleMedium
+                                  style: Theme.of(context).textTheme.titleMedium
                                       ?.copyWith(
                                         fontWeight: FontWeight.bold,
-                                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onPrimaryContainer,
                                       ),
                                 ),
                                 const SizedBox(width: 8),
@@ -453,13 +521,17 @@ class _SymptomScreenState extends State<SymptomScreen> {
                                     vertical: 2,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: Theme.of(context).colorScheme.primary,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: Text(
                                     '${selectedSymptoms.length}',
                                     style: TextStyle(
-                                      color: Theme.of(context).colorScheme.onPrimary,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onPrimary,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 12,
                                     ),
@@ -477,7 +549,9 @@ class _SymptomScreenState extends State<SymptomScreen> {
                                 icon: const Icon(Icons.clear_all, size: 18),
                                 label: const Text('Clear All'),
                                 style: TextButton.styleFrom(
-                                  foregroundColor: Theme.of(context).colorScheme.error,
+                                  foregroundColor: Theme.of(
+                                    context,
+                                  ).colorScheme.error,
                                 ),
                               ),
                           ],
@@ -488,10 +562,14 @@ class _SymptomScreenState extends State<SymptomScreen> {
                           runSpacing: 8,
                           children: selectedSymptoms.map((symptom) {
                             return Chip(
-                              backgroundColor: Theme.of(context).colorScheme.surface,
+                              backgroundColor: Theme.of(
+                                context,
+                              ).colorScheme.surface,
                               label: Text(
                                 symptom.replaceAll("_", " "),
-                                style: const TextStyle(fontWeight: FontWeight.w500),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                               deleteIcon: const Icon(Icons.close, size: 18),
                               onDeleted: () {
@@ -500,7 +578,9 @@ class _SymptomScreenState extends State<SymptomScreen> {
                                 });
                               },
                               side: BorderSide(
-                                color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.primary.withOpacity(0.3),
                               ),
                             );
                           }).toList(),
@@ -522,7 +602,10 @@ class _SymptomScreenState extends State<SymptomScreen> {
                         Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                            color: Theme.of(context)
+                                .colorScheme
+                                .surfaceContainerHighest
+                                .withOpacity(0.5),
                             borderRadius: const BorderRadius.only(
                               topLeft: Radius.circular(12),
                               topRight: Radius.circular(12),
@@ -531,7 +614,9 @@ class _SymptomScreenState extends State<SymptomScreen> {
                           child: Row(
                             children: [
                               Icon(
-                                showAllSymptoms ? Icons.list_rounded : Icons.star_rounded,
+                                showAllSymptoms
+                                    ? Icons.list_rounded
+                                    : Icons.star_rounded,
                                 color: Theme.of(context).colorScheme.primary,
                                 size: 20,
                               ),
@@ -540,12 +625,8 @@ class _SymptomScreenState extends State<SymptomScreen> {
                                 showAllSymptoms
                                     ? 'All Symptoms (${displaySymptoms.length})'
                                     : 'Common Symptoms (${displaySymptoms.length})',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                style: Theme.of(context).textTheme.titleMedium
+                                    ?.copyWith(fontWeight: FontWeight.bold),
                               ),
                             ],
                           ),
@@ -556,8 +637,9 @@ class _SymptomScreenState extends State<SymptomScreen> {
                             itemCount: displaySymptoms.length,
                             itemBuilder: (context, index) {
                               final symptom = displaySymptoms[index];
-                              final isSelected =
-                                  selectedSymptoms.contains(symptom);
+                              final isSelected = selectedSymptoms.contains(
+                                symptom,
+                              );
                               return CheckboxListTile(
                                 title: Text(symptom.replaceAll("_", " ")),
                                 value: isSelected,
@@ -614,10 +696,9 @@ class _SymptomScreenState extends State<SymptomScreen> {
                           padding: const EdgeInsets.all(12),
                           margin: const EdgeInsets.only(bottom: 12),
                           decoration: BoxDecoration(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .tertiaryContainer
-                                .withOpacity(0.3),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.tertiaryContainer.withOpacity(0.3),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Row(
@@ -631,13 +712,11 @@ class _SymptomScreenState extends State<SymptomScreen> {
                               Expanded(
                                 child: Text(
                                   "This tool supports awareness, not replace a doctor's diagnosis",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodySmall
+                                  style: Theme.of(context).textTheme.bodySmall
                                       ?.copyWith(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onTertiaryContainer,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onTertiaryContainer,
                                       ),
                                 ),
                               ),
@@ -654,8 +733,10 @@ class _SymptomScreenState extends State<SymptomScreen> {
                                     isLoading = true;
                                   });
                                   try {
-                                    final rawResult = await ApiService
-                                        .predictDisease(selectedSymptoms);
+                                    final rawResult =
+                                        await ApiService.predictDisease(
+                                          selectedSymptoms,
+                                        );
                                     final normalizedResult =
                                         _normalizePrediction(rawResult);
 
@@ -667,36 +748,43 @@ class _SymptomScreenState extends State<SymptomScreen> {
                                       confidence:
                                           normalizedResult['confidence_percent'],
                                       top3: List<Map<String, dynamic>>.from(
-                                          normalizedResult['top3_maps'] ?? []),
+                                        normalizedResult['top3_maps'] ?? [],
+                                      ),
                                     );
 
                                     if (context.mounted) {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (_) =>
-                                              ResultScreen(result: normalizedResult),
+                                          builder: (_) => ResultScreen(
+                                            result: normalizedResult,
+                                          ),
                                         ),
                                       );
                                     }
                                   } catch (e) {
                                     if (context.mounted) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
                                         SnackBar(
                                           content: const Row(
                                             children: [
-                                              Icon(Icons.error_outline,
-                                                  color: Colors.white),
+                                              Icon(
+                                                Icons.error_outline,
+                                                color: Colors.white,
+                                              ),
                                               SizedBox(width: 8),
                                               Expanded(
                                                 child: Text(
-                                                    "Unable to connect. Please check internet."),
+                                                  "Unable to connect. Please check internet.",
+                                                ),
                                               ),
                                             ],
                                           ),
-                                          backgroundColor:
-                                              Theme.of(context).colorScheme.error,
+                                          backgroundColor: Theme.of(
+                                            context,
+                                          ).colorScheme.error,
                                           behavior: SnackBarBehavior.floating,
                                         ),
                                       );
@@ -720,7 +808,9 @@ class _SymptomScreenState extends State<SymptomScreen> {
                                 )
                               : const Icon(Icons.psychology_rounded),
                           label: Text(
-                            isLoading ? "Analyzing symptoms..." : "Predict Disease",
+                            isLoading
+                                ? "Analyzing symptoms..."
+                                : "Predict Disease",
                           ),
                         ),
                       ),
