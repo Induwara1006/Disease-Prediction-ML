@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "611897330278",
+    "project_id": "disease-prediction-1d2e4",
+    "storage_bucket": "disease-prediction-1d2e4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:611897330278:android:efd7cf0a478f48aa3fbba7",
+        "android_client_info": {
+          "package_name": "com.example.disease_prediction_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "611897330278-l1he1ddugm2tpaqq275diaiivsuf9d01.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCBRiJgujqEDJ52t8mELVvhBrPE7muFuoU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "611897330278-l1he1ddugm2tpaqq275diaiivsuf9d01.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
