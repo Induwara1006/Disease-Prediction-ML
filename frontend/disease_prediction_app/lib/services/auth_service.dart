@@ -44,7 +44,15 @@ class AuthService {
   }
 
   Future<void> signOut() async {
+    try {
+      // Disconnect from Google Sign-In to clear all cached credentials
+      await _googleSignIn.disconnect();
+    } catch (e) {
+      debugPrint('Google Sign-In disconnect error (this is normal): $e');
+    }
+    // Sign out from Google Sign-In
     await _googleSignIn.signOut();
+    // Sign out from Firebase
     await _auth.signOut();
   }
 }
