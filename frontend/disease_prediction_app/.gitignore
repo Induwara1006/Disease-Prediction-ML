@@ -1,26 +1,69 @@
-﻿# Flutter
+﻿# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.buildlog/
+.history
+.svn/
+
+# IntelliJ
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# The .vscode folder contains launch configuration and tasks you configure in
+# VS Code which you may wish to share with your coworkers.
+.vscode/
+
+# Flutter/Dart/Pub
 .dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
 .packages
 .pub-cache/
 .pub/
 build/
+coverage/
+doc/api/
 
 # Android
-android/.gradle/
+android/gradlew
+android/gradlew.bat
 android/local.properties
 android/key.properties
-android/**/GeneratedPluginRegistrant.java
+android/app/src/main/assets/
+android/**/generated/
+android/**/gradle-wrapper.jar
+android/.gradle
+android/captures/
+android/gradle/
+android/**/bumblebee_analytics_state.mp
 
 # iOS
-ios/Pods/
-ios/.symlinks/
+ios/.generated/
+ios/Flutter/App.framework
 ios/Flutter/Flutter.framework
 ios/Flutter/Flutter.podspec
-ios/Flutter/App.framework
 ios/Flutter/Generated.xcconfig
+ios/Flutter/app.flx
+ios/Flutter/app.zip
+ios/Flutter/flutter_assets/
 ios/Flutter/flutter_export_environment.sh
+ios/ServiceDefinitions.json
+ios/Runner/GeneratedPluginRegistrant.*
+ios/Pods/
+ios/.symlinks/
 
-# IDE
-.idea/
-.vscode/
-*.log
+# Background
+ios/Runner.xcworkspace/xcshareddata/xcbaselines
+ios/Runner.xcworkspace/xcuserdata/
+ios/Runner.xcodeproj/project.xcworkspace/xcshareddata/xcbaselines
+ios/Runner.xcodeproj/project.xcworkspace/xcuserdata/
+ios/Runner.xcodeproj/xcuserdata/
+
+# Exceptions to above rules.
+!/android/app/src/main/assets/symptoms.json
