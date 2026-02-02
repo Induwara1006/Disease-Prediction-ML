@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import '../services/api_service.dart';
 import '../services/firestore_service.dart';
-import 'package:provider/provider.dart';
 import '../providers/theme_provider.dart';
 import '../widgets/guidance_section.dart';
 import '../widgets/symptom_search_bar.dart';
