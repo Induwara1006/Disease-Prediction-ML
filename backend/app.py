@@ -49,4 +49,5 @@ def predict():
     })
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # Bind to all interfaces so physical devices on the same network can connect
+    app.run(host="0.0.0.0", port=5000, debug=True)

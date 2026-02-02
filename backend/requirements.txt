@@ -1,3 +1,5 @@
 flask
 numpy
-scikit-learn
+# Pin to the version used to train/pickle the model to avoid
+# InconsistentVersionWarning and ensure compatibility
+scikit-learn==1.6.1
