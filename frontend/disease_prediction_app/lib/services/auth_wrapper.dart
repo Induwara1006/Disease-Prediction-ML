@@ -5,7 +5,7 @@ import '../screens/home_screen.dart';
 import '../screens/login_screen.dart';
 
 class AuthWrapper extends StatefulWidget {
-  const AuthWrapper({super.key}) : authStateChanges = AuthService().authStateChanges;
+  AuthWrapper({super.key}) : authStateChanges = AuthService().authStateChanges;
 
   final Stream<User?> authStateChanges;
 

@@ -77,7 +77,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       // AuthWrapper handles routing between Login and Home
-      home: const AuthWrapper(),
+      home: AuthWrapper(),
     );
   }
 }
