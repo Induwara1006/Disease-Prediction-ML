@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -12,6 +13,7 @@ import '../widgets/available_symptoms_card.dart';
 import '../constants.dart';
 import 'result_screen.dart';
 import 'history_screen.dart';
+import 'profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -129,16 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
       final rawResult = await ApiService.predictDisease(selectedSymptoms);
       final normalizedResult = _normalizePrediction(rawResult);
 
-      // Save to Firestore
-      await firestoreService.savePrediction(
-        symptoms: selectedSymptoms,
-        predictedDisease: normalizedResult['predicted_disease'],
-        confidence: normalizedResult['confidence_percent'],
-        top3: List<Map<String, dynamic>>.from(
-          normalizedResult['top3_maps'] ?? [],
-        ),
-      );
-
+      // Navigate to results first (don't let Firestore errors block the UI)
       if (mounted) {
         Navigator.push(
           context,
@@ -147,21 +140,38 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         );
       }
+
+      // Try to save to Firestore in the background (optional)
+      // Don't await - let it fail silently if Firestore isn't set up
+      firestoreService.savePrediction(
+        symptoms: selectedSymptoms,
+        predictedDisease: normalizedResult['predicted_disease'],
+        confidence: normalizedResult['confidence_percent'],
+        top3: List<Map<String, dynamic>>.from(
+          normalizedResult['top3_maps'] ?? [],
+        ),
+      ).catchError((error) {
+        // Firestore save failed - that's OK, history is optional
+        debugPrint('⚠️ Failed to save to Firestore (optional): $error');
+      });
     } catch (e) {
       if (mounted) {
+        // Show detailed error message
+        final errorMessage = e.toString().replaceFirst('Exception: ', '');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Row(
+            content: Row(
               children: [
-                Icon(Icons.error_outline, color: Colors.white),
-                SizedBox(width: 8),
+                const Icon(Icons.error_outline, color: Colors.white),
+                const SizedBox(width: 8),
                 Expanded(
-                  child: Text("Unable to connect. Please check internet."),
+                  child: Text(errorMessage),
                 ),
               ],
             ),
             backgroundColor: Theme.of(context).colorScheme.error,
             behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 5),
           ),
         );
       }
@@ -201,6 +211,16 @@ class _HomeScreenState extends State<HomeScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const HistoryScreen()),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.account_circle),
+            tooltip: 'Profile',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ProfileScreen()),
               );
             },
           ),

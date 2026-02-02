@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "611897330278-agmdpjblhdsqi5f73lrmdpts6v8cnftk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.disease_prediction_app",
+            "certificate_hash": "99e99dffe3f70d3e97ad3d2bf504d44e7b031b46"
+          }
+        },
+        {
           "client_id": "611897330278-l1he1ddugm2tpaqq275diaiivsuf9d01.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,6 +37,13 @@
             {
               "client_id": "611897330278-l1he1ddugm2tpaqq275diaiivsuf9d01.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "611897330278-v3dtf4hkam8vsp12ma71hjlcn7g37v9j.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.diseasePredictionApp"
+              }
             }
           ]
         }
