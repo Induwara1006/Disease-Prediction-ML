@@ -215,15 +215,20 @@ class _HomeScreenState extends State<HomeScreen> {
                 color: Colors.white.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Icon(Icons.health_and_safety, size: 24),
+              child: Icon(
+                Icons.health_and_safety,
+                size: 24,
+                color: Theme.of(context).colorScheme.onPrimary,
+              ),
             ),
             const SizedBox(width: 12),
-            const Text(
+            Text(
               'HealthAI Pro',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 22,
                 letterSpacing: 0.5,
+                color: Theme.of(context).colorScheme.onPrimary,
               ),
             ),
           ],
@@ -232,6 +237,7 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(
             icon: Icon(
               isDarkMode ? Icons.light_mode : Icons.dark_mode,
+              color: Theme.of(context).colorScheme.onPrimary,
             ),
             tooltip: isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode',
             onPressed: () {
@@ -239,7 +245,7 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.history),
+            icon: Icon(Icons.history, color: Theme.of(context).colorScheme.onPrimary),
             tooltip: 'History',
             onPressed: () {
               Navigator.push(
@@ -249,7 +255,7 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.account_circle),
+            icon: Icon(Icons.account_circle, color: Theme.of(context).colorScheme.onPrimary),
             tooltip: 'Profile',
             onPressed: () {
               Navigator.push(
@@ -265,7 +271,7 @@ class _HomeScreenState extends State<HomeScreen> {
           image: DecorationImage(
             image: AssetImage('assets/02A-4.png'),
             fit: BoxFit.cover,
-            opacity: 0.5,
+            opacity: 0.15,
           ),
         ),
         child: allSymptoms.isEmpty

@@ -74,15 +74,20 @@ class ProfileScreen extends StatelessWidget {
                 color: Colors.white.withOpacity(0.2),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.person, size: 20),
+              child: Icon(
+                Icons.person,
+                size: 20,
+                color: Theme.of(context).colorScheme.onPrimary,
+              ),
             ),
             const SizedBox(width: 8),
-            const Text(
+            Text(
               'Profile',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 20,
                 letterSpacing: 0.5,
+                color: Theme.of(context).colorScheme.onPrimary,
               ),
             ),
           ],

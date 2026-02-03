@@ -45,22 +45,27 @@ class HistoryScreen extends StatelessWidget {
                 color: Colors.white.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Icon(Icons.history, size: 22),
+              child: Icon(
+                Icons.history,
+                size: 22,
+                color: Theme.of(context).colorScheme.onPrimary,
+              ),
             ),
             const SizedBox(width: 12),
-            const Text(
+            Text(
               'Prediction History',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 20,
                 letterSpacing: 0.5,
+                color: Theme.of(context).colorScheme.onPrimary,
               ),
             ),
           ],
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.delete_sweep),
+            icon: Icon(Icons.delete_sweep, color: Theme.of(context).colorScheme.onPrimary),
             onPressed: () async {
               final confirmed = await showDialog<bool>(
                 context: context,
