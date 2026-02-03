@@ -52,12 +52,17 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/02A-4.png'),
+            fit: BoxFit.cover,
+            opacity: 0.5,
+          ),
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
-              Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.3),
+              Theme.of(context).colorScheme.primaryContainer.withOpacity(0.1),
+              Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.1),
             ],
           ),
         ),
@@ -94,7 +99,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 40),
                   Text(
-                    "Disease Prediction",
+                    "HealthAI Pro",
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.bold,

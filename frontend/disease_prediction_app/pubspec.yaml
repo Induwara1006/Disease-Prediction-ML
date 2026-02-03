@@ -42,6 +42,7 @@ dependencies:
 flutter:
   assets:
     - assets/symptoms.json
+    - assets/02A-4.png
   uses-material-design: true
 
 dev_dependencies:

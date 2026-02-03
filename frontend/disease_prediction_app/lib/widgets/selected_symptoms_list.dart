@@ -22,17 +22,23 @@ class SelectedSymptomsList extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
           colors: [
-            Theme.of(context).colorScheme.primaryContainer,
             Theme.of(context).colorScheme.primaryContainer.withOpacity(0.7),
+            Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.6),
           ],
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.primary.withOpacity(0.4),
+          width: 2,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            color: Theme.of(context).colorScheme.primary.withOpacity(0.25),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
@@ -90,19 +96,41 @@ class SelectedSymptomsList extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Wrap(
-            spacing: 8,
-            runSpacing: 8,
+            spacing: 10,
+            runSpacing: 10,
             children: selectedSymptoms.map((symptom) {
-              return Chip(
-                backgroundColor: Theme.of(context).colorScheme.surface,
-                label: Text(
-                  symptom.replaceAll("_", " "),
-                  style: const TextStyle(fontWeight: FontWeight.w500),
+              return Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
-                deleteIcon: const Icon(Icons.close, size: 18),
-                onDeleted: () => onRemoveSymptom(symptom),
-                side: BorderSide(
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                child: Chip(
+                  backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.15),
+                  label: Text(
+                    symptom.replaceAll("_", " "),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.3,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                  deleteIcon: Icon(
+                    Icons.close_rounded,
+                    size: 20,
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+                  onDeleted: () => onRemoveSymptom(symptom),
+                  side: BorderSide(
+                    color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
+                    width: 2,
+                  ),
+                  elevation: 0,
                 ),
               );
             }).toList(),

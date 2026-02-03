@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Disease Prediction',
+      title: 'HealthAI Pro',
       themeMode: Provider.of<ThemeProvider>(context).themeMode,
       theme: ThemeData(
         useMaterial3: true,

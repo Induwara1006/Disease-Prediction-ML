@@ -193,7 +193,41 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Disease Prediction'),
+        elevation: 0,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Theme.of(context).colorScheme.primary,
+                Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                Theme.of(context).colorScheme.tertiary,
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(Icons.health_and_safety, size: 24),
+            ),
+            const SizedBox(width: 12),
+            const Text(
+              'HealthAI Pro',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 22,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ],
+        ),
         actions: [
           IconButton(
             icon: Icon(
@@ -226,10 +260,18 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: allSymptoms.isEmpty
-          ? const Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/02A-4.png'),
+            fit: BoxFit.cover,
+            opacity: 0.5,
+          ),
+        ),
+        child: allSymptoms.isEmpty
+            ? const Center(child: CircularProgressIndicator())
+            : Column(
+                children: [
                 GuidanceSection(selectedCount: selectedSymptoms.length),
                 SymptomSearchBar(
                   allSymptoms: allSymptoms,
@@ -327,24 +369,52 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       SizedBox(
                         width: double.infinity,
-                        child: FilledButton.icon(
-                          onPressed: (selectedSymptoms.isEmpty || isLoading)
-                              ? null
-                              : _handlePrediction,
-                          icon: isLoading
-                              ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: Colors.white,
-                                  ),
-                                )
-                              : const Icon(Icons.psychology_rounded),
-                          label: Text(
-                            isLoading
-                                ? "Analyzing symptoms..."
-                                : "Predict Disease",
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: selectedSymptoms.isEmpty || isLoading
+                                ? []
+                                : [
+                                    BoxShadow(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary
+                                          .withOpacity(0.3),
+                                      blurRadius: 12,
+                                      offset: const Offset(0, 6),
+                                    ),
+                                  ],
+                          ),
+                          child: FilledButton.icon(
+                            onPressed: (selectedSymptoms.isEmpty || isLoading)
+                                ? null
+                                : _handlePrediction,
+                            style: FilledButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 18),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              textStyle: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                            icon: isLoading
+                                ? const SizedBox(
+                                    width: 22,
+                                    height: 22,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2.5,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : const Icon(Icons.psychology_rounded, size: 24),
+                            label: Text(
+                              isLoading
+                                  ? "Analyzing symptoms..."
+                                  : "Predict Disease",
+                            ),
                           ),
                         ),
                       ),
@@ -353,6 +423,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
             ),
+      ),
     );
   }
 }

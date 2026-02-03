@@ -35,24 +35,40 @@ class GuidanceSection extends StatelessWidget {
       margin: const EdgeInsets.fromLTRB(16, 16, 16, 12),
       decoration: BoxDecoration(
         gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
           colors: [
-            _guidanceColor.withOpacity(0.15),
-            _guidanceColor.withOpacity(0.05),
+            _guidanceColor.withOpacity(0.85),
+            _guidanceColor.withOpacity(0.65),
           ],
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: _guidanceColor.withOpacity(0.4),
+          color: _guidanceColor.withOpacity(0.8),
           width: 2,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: _guidanceColor.withOpacity(0.4),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
+          ),
+        ],
       ),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: _guidanceColor.withOpacity(0.2),
+              color: Colors.white.withOpacity(0.9),
               shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.15),
+                  blurRadius: 8,
+                  offset: const Offset(0, 3),
+                ),
+              ],
             ),
             child: Icon(
               _guidanceIcon,
@@ -64,11 +80,19 @@ class GuidanceSection extends StatelessWidget {
           Expanded(
             child: Text(
               _guidanceText,
-              style: TextStyle(
-                color: _guidanceColor,
-                fontWeight: FontWeight.w600,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
                 fontSize: 15,
                 height: 1.4,
+                letterSpacing: 0.3,
+                shadows: [
+                  Shadow(
+                    color: Colors.black26,
+                    offset: Offset(0, 1),
+                    blurRadius: 2,
+                  ),
+                ],
               ),
             ),
           ),
